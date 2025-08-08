@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        
+        <h2 class="animated-heading">Quote of the Day</h2>
+        <blockquote id="quote">Loading...</blockquote>
+
+        <span id="author">Loading...</span>
+        <br>
+<button id="copy-btn" title="Copy Quote">📋</button>
+<button id="download-btn" title="Download Quote">📷</button>
+
+
+    <div>
+        <button id="new-quote" onclick="getquote(api_url)" >New Quote</button>
+       <button onclick="shareOnWhatsApp()"><img src="iconn.png" > WhatsApp</button>
+    </div>
+    </div>
+<button id="download-btn" style="display:none;" title="Download Quote"></button>
+
+<button id="download-btn" style="display:none;" title="Download Quote"></button>
+
+<script>
+const quote = document.getElementById("quote");
+const author = document.getElementById("author");
+const copyBtn = document.getElementById("copy-btn");
+const downloadBtn = document.getElementById("download-btn");
+
+const api_url = "https://thequoteshub.com/api/random-quote";
+
+// Typewriter function with callback
+function typeWriter(element, text, speed = 40, callback) {
+    element.innerHTML = "";
+    let i = 0;
+    function typing() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        } else if (callback) {
+            callback(); // typing complete
+        }
+    }
+    typing();
+}
+
+// Fetch + Typewriter sequence
+async function getquote(url) {
+    copyBtn.style.display = "none";
+    downloadBtn.style.display = "none";  // hide download button at start
+
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
+
+    typeWriter(quote, data.text, 40, () => {
+        typeWriter(author, data.author, 50, () => {
+            copyBtn.style.display = "inline-block";      // show copy button
+            downloadBtn.style.display = "inline-block";  // show download button
+            // Copy button click handler
+copyBtn.addEventListener("click", () => {
+    const textToCopy = `${quote.innerText} ${author.innerText}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Quote copied!");
+    }).catch(() => {
+        alert("Copy failed! Please try manually.");
+    });
+});
+
+        });
+    });
+}
+function shareOnWhatsApp() {
+  const text = `${quote.innerText} ${author.innerText}`;
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
+
+// Download button click handler
+downloadBtn.addEventListener("click", () => {
+    // Create canvas and draw quote + author
+    const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 300;
+    const ctx = canvas.getContext("2d");
+
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, "#667eea");
+    gradient.addColorStop(1, "#764ba2");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Text styles
+    ctx.fillStyle = "white";
+    ctx.font = "bold 24px Arial";
+    ctx.textAlign = "center";
+
+    // Helper: text wrapping
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        for(let n=0; n<words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            if(metrics.width > maxWidth && n > 0) {
+                context.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        context.fillText(line, x, y);
+    }
+
+    wrapText(ctx, quote.innerText, canvas.width/2, 80, 460, 30);
+
+    ctx.font = "italic 20px Arial";
+    ctx.fillText(author.innerText, canvas.width/2, 250);
+
+    // Download image
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "quote.png";
+    link.click();
+});
+
+// Initial call
+getquote(api_url);
+</script>
+ <footer>
+  <p>Made by @KSHAF PARVEEN:)</p>
+</footer>
+
+</body>
+</html>

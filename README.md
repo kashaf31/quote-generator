@@ -1,6 +1,5 @@
 # Quote Generator Web App
-A simple and responsive web application that fetches random inspirational quotes and displays them with a smooth typewriter animation. Users can copy quotes, download them as images, and share them on WhatsApp. Includes a dark mode toggle for better user experience.
-
+A simple and responsive web application that fetches random inspirational quotes and displays them with a smooth typewriter animation. Users can copy quotes, download them as images, and share them on WhatsApp.
 ## Features
 - Fetches random quotes from an external API  
 - Typewriter animation for quote display  
